@@ -1,7 +1,10 @@
-public class Election {
+import java.util.GregorianCalendar;
 
-    private static int nextId = 0;
+public abstract class Election {
+
+    private static int nextId = 1;
     private final int id = setId();
+    private final GregorianCalendar date = new GregorianCalendar();
 
 
     private int setId() {

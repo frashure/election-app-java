@@ -19,4 +19,12 @@ public abstract class Election {
         return i;
     }
 
+    public GregorianCalendar getDate() {
+        return this.date;
+    }
+
+    public Office getOffice() {
+        return this.office;
+    }
+
 }

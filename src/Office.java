@@ -8,4 +8,8 @@ public abstract class Office {
         this.isTermLimited = isTermLimited;
     }
 
+    public String getName() {
+        return this.name;
+    }
+
 }

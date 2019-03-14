@@ -19,6 +19,7 @@ public abstract class Election {
         return i;
     }
 
+
     public GregorianCalendar getDate() {
         return this.date;
     }
@@ -27,4 +28,7 @@ public abstract class Election {
         return this.office;
     }
 
+    public int getId() {
+        return this.id;
+    }
 }

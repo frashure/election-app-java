@@ -1,6 +1,10 @@
+import sun.util.calendar.Gregorian;
+
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Scanner;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.Date;
 
 public class Main {
 
@@ -8,7 +12,22 @@ public class Main {
     public static final String PASS = System.getenv("DB_PASS");
     public static final String CONN_STRING = System.getenv("DB_URL");
 
-    public static void main(String[] args) throws SQLException {
+    public static GregorianCalendar dateConvertor(String date) throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String dateString = date;
+        Date newDate = sdf.parse(dateString);
+        Calendar c = Calendar.getInstance();
+        c.setTime(newDate);
+
+        int y = c.get(Calendar.YEAR);
+        int m = c.get(Calendar.MONTH);
+        int d =  c.get(Calendar.DAY_OF_WEEK);
+
+        GregorianCalendar gc = new GregorianCalendar(y, m, d);
+        return gc;
+    }
+
+    public static void main(String[] args) throws SQLException, ParseException {
 
 
         Connection conn = null;
@@ -16,22 +35,47 @@ public class Main {
         ResultSet rs = null;
 
         ArrayList<Candidate> candidates = new ArrayList<>();
+        ArrayList<Election> elections = new ArrayList<>();
 
         try {
             conn = DriverManager.getConnection(CONN_STRING, USERNAME, PASS);
             System.out.println("Connected");
             stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            rs = stmt.executeQuery("select * from candidates;");
+            rs = stmt.executeQuery("SELECT e.*, c.*, ec.election_id AS candidate_election, p.party_name, er.num_votes, er.winner " +
+                            "FROM elections e " +
+                            "LEFT JOIN election_candidates ec " +
+                            "ON e.election_id = ec.election_id " +
+                            "LEFT JOIN candidates c " +
+                            "ON ec.candidate_id = c.candidate_id " +
+                            "LEFT JOIN parties p " +
+                            "ON c.party_id = p.party_id " +
+                            "LEFT JOIN election_results er " +
+                            "ON c.candidate_id = er.candidate_id " +
+                            "WHERE year(date) = 2019 " +
+                    "ORDER BY e.election_id;");
 
             while (rs.next()) {
-                int id = Integer.parseInt(rs.getString("candidate_id"));
-                String fName = rs.getString("first_name");
-                String lName = rs.getString("last_name");
-                String partyName = rs.getString("party_id");
-                Party p = new Party(null, partyName, null);
+                String eid = rs.getString("election_id");
+                GregorianCalendar date = dateConvertor(rs.getString("date"));
+                Office o = new Office(rs.getString("office_id"));
+                int district = Integer.parseInt(rs.getString("district"));
 
-                Candidate c = new Candidate(fName, lName, p, null);
-                candidates.add(c);
+                if (rs.getString("type") == "primary") {
+                    Party p = new Party(rs.getString("party_id"));
+                    PrimaryElection pe = new PrimaryElection(date, o, p, district);
+                    elections.add(pe);
+                } else {
+                    GeneralElection ge = new GeneralElection(date, o);
+                    elections.add(ge);
+                }
+//                int id = Integer.parseInt(rs.getString("candidate_id"));
+//                String fName = rs.getString("first_name");
+//                String lName = rs.getString("last_name");
+//                String partyName = rs.getString("party_id");
+//                Party p = new Party(null, partyName, null);
+//
+//                Candidate c = new Candidate(fName, lName, p, null);
+//                candidates.add(c);
             }
         }
         catch (SQLException e) {
@@ -49,9 +93,19 @@ public class Main {
             }
         }
 
-        for (Candidate c : candidates) {
-            System.out.println("Name: " + c.getName());
-            System.out.println("Party: " + c.getParty() + "\n");
+//        for (Candidate c : candidates) {
+//            System.out.println("Name: " + c.getName());
+//            System.out.println("Party: " + c.getParty() + "\n");
+//        }
+        for (Election e : elections) {
+            System.out.println("Office: " + e.getOffice().getName());
+            if (1 == 1) {
+                System.out.println("Party: " + ((PrimaryElection) e).getParty().getName());
+            }
+            Date dateToFormat = e.getDate().getTime();
+            SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy");
+            String formattedDate = sdf.format(dateToFormat);
+            System.out.println("Date: " + formattedDate);
         }
 
 //        ArrayList<Candidate> candidates = new ArrayList<>();

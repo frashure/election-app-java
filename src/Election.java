@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.GregorianCalendar;
 
 public abstract class Election {
@@ -6,6 +7,7 @@ public abstract class Election {
     private final int id = setId();
     private final GregorianCalendar date;
     private Office office;
+    private ArrayList<Candidate> candidates = new ArrayList<>();
 
 
     public Election(GregorianCalendar date, Office office) {
@@ -30,5 +32,13 @@ public abstract class Election {
 
     public int getId() {
         return this.id;
+    }
+
+    public addCandidate(Candidate c) {
+        this.candidates.add(c);
+    }
+
+    public ArrayList getCandidates() {
+        return this.candidates;
     }
 }

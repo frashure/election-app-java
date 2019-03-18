@@ -1,5 +1,3 @@
-import sun.util.calendar.Gregorian;
-
 import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -12,7 +10,7 @@ public class Main {
     public static final String PASS = System.getenv("DB_PASS");
     public static final String CONN_STRING = System.getenv("DB_URL");
 
-    public static GregorianCalendar dateConvertor(String date) throws ParseException {
+    public static GregorianCalendar dateConverter(String date) throws ParseException {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         String dateString = date;
         Date newDate = sdf.parse(dateString);
@@ -56,7 +54,7 @@ public class Main {
 
             while (rs.next()) {
                 String eid = rs.getString("election_id");
-                GregorianCalendar date = dateConvertor(rs.getString("date"));
+                GregorianCalendar date = dateConverter(rs.getString("date"));
                 Office o = new Office(rs.getString("office_id"));
                 int district = Integer.parseInt(rs.getString("district"));
 

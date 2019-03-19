@@ -10,18 +10,20 @@ public abstract class Election {
 
     private static int nextId = 1;
     private final int id = setId();
+    private final String type;
     private final GregorianCalendar date;
     private Office office;
     private ArrayList<Candidate> candidates = new ArrayList<>();
 
-    public static final String USERNAME = System.getenv("DB_USER");
-    public static final String PASS = System.getenv("DB_PASS");
-    public static final String CONN_STRING = System.getenv("DB_URL");
+    private static final String USERNAME = System.getenv("DB_USER");
+    private static final String PASS = System.getenv("DB_PASS");
+    private static final String CONN_STRING = System.getenv("DB_URL");
 
 
-    public Election(GregorianCalendar date, Office office) {
+    public Election(GregorianCalendar date, Office office, String type) {
         this.date = date;
         this.office = office;
+        this.type = type;
     }
 
     private int setId() {
@@ -49,6 +51,10 @@ public abstract class Election {
 
     public ArrayList getCandidates() {
         return this.candidates;
+    }
+
+    public String getType() {
+        return this.type;
     }
 
     public static GregorianCalendar dateConverter(String date) throws ParseException {
@@ -97,13 +103,14 @@ public abstract class Election {
                 GregorianCalendar date = dateConverter(rs.getString("date"));
                 Office o = new Office(rs.getString("office_id"));
                 int district = Integer.parseInt(rs.getString("district"));
+                String t = rs.getString("type");
 
-                if (rs.getString("type") == "primary") {
+                if (t.equalsIgnoreCase("primary")) {
                     Party p = new Party(rs.getString("party_id"));
-                    PrimaryElection pe = new PrimaryElection(date, o, p, district);
+                    PrimaryElection pe = new PrimaryElection(date, o, p, district, t);
                     elections.add(pe);
                 } else {
-                    GeneralElection ge = new GeneralElection(date, o);
+                    GeneralElection ge = new GeneralElection(date, o, t);
                     elections.add(ge);
                 }
 //                int id = Integer.parseInt(rs.getString("candidate_id"));
@@ -171,5 +178,10 @@ public abstract class Election {
         return elections;
     }
 
+//    public ArrayList<Election> buildElections() {
+//        // get elections from DB
+//        // iterate through results and create instances
+//        // add to array
+//    }
 
 }

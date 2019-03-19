@@ -20,6 +20,10 @@ public class Party {
         return this.name;
     }
 
+    public String getShortName() {
+        return this.shortName;
+    }
+
     public String getWebsite() {
         return this.website;
     }

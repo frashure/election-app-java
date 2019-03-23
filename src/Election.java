@@ -9,7 +9,7 @@ import java.util.GregorianCalendar;
 public abstract class Election {
 
     private static int nextId = 1;
-    private final int id = setId();
+    private final int id;
     private final String type;
     private final GregorianCalendar date;
     private Office office;
@@ -20,7 +20,8 @@ public abstract class Election {
     private static final String CONN_STRING = System.getenv("DB_URL");
 
 
-    public Election(GregorianCalendar date, Office office, String type) {
+    public Election(int id, GregorianCalendar date, Office office, String type) {
+        this.id = id;
         this.date = date;
         this.office = office;
         this.type = type;

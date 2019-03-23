@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 public class Party {
 
     private final String shortName;
@@ -28,4 +30,7 @@ public class Party {
         return this.website;
     }
 
+//    public static ArrayList<Party> createParties() {
+//
+//    }
 }

@@ -1,9 +1,10 @@
-import util.DataAccessObject;
+package util;
+import main.Office;
 
-public class CandidateDAO implements DataAccessObject<Candidate> {
+public class OfficeDAO extends DataAccessObject<Office> {
 
     @Override
-    public Candidate get() {
+    public Office getById() {
         return null;
     }
 

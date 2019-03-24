@@ -1,3 +1,5 @@
+package main;
+
 public class Office {
 
     private String name;

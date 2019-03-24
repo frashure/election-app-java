@@ -1,4 +1,5 @@
-import java.util.ArrayList;
+package main;
+
 import java.util.GregorianCalendar;
 
 public class PrimaryElection extends Election {

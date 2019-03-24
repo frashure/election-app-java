@@ -2,7 +2,7 @@ package util;
 
 public interface DataAccessObject<T> {
 
-    T get();
+    T getById();
     boolean insert();
     boolean update();
     boolean delete();

@@ -1,9 +1,11 @@
-import util.DataAccessObject;
+package util;
+import main.Candidate;
 
-public class ElectionDAO implements DataAccessObject<Election> {
+
+public class CandidateDAO implements DataAccessObject<Candidate> {
 
     @Override
-    public Election get() {
+    public Candidate getById() {
         return null;
     }
 

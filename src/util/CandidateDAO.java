@@ -7,10 +7,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 
-public class CandidateDAO implements DataAccessObject<Candidate> {
+public final class CandidateDAO implements DataAccessObject<Candidate> {
 
     @Override
-    public Candidate getById(int id) {
+    public static Candidate getById(int id) {
         String sql = "SELECT * FROM candidates WHERE candidate_id = ?";
 
         try (Connection conn = ConnectionFactory.getConnection();
@@ -22,6 +22,7 @@ public class CandidateDAO implements DataAccessObject<Candidate> {
 
 
          rs.close();
+         return new Candidate();
         }
         catch (SQLException e) {
             e.printStackTrace();
@@ -30,7 +31,7 @@ public class CandidateDAO implements DataAccessObject<Candidate> {
     }
 
     @Override
-    public boolean insert(String fName, String mName, String lName, String party, String website) {
+    public static boolean insert(String fName, String mName, String lName, String party, String website) {
         String sql = "INSERT INTO candidates (first_name, middle_name, last_name, party_id, website VALUES (?, ?, ? ?, ?)";
 
         try (Connection conn = ConnectionFactory.getConnection();
@@ -52,12 +53,12 @@ public class CandidateDAO implements DataAccessObject<Candidate> {
     }
 
     @Override
-    public boolean update() {
+    public static boolean update() {
         return false;
     }
 
     @Override
-    public boolean delete() {
+    public static boolean delete() {
         return false;
     }
 }

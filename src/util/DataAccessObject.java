@@ -7,5 +7,4 @@ public interface DataAccessObject<T> {
     boolean update();
     boolean delete();
 
-
 }

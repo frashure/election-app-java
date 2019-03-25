@@ -6,7 +6,7 @@ import java.sql.*;
 import java.util.ArrayList;
 
 @SuppressWarnings("Duplicates")
-public final abstract class PartyDAO implements DataAccessObject<Party> {
+public final class PartyDAO implements DataAccessObject<Party> {
 
     private static ArrayList<Party> parties = new ArrayList<>();
 

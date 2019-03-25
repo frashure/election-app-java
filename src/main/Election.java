@@ -1,5 +1,6 @@
 package main;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -20,12 +21,6 @@ public abstract class Election {
         this.date = date;
         this.office = office;
         this.type = type;
-    }
-
-    private int setId() {
-        int i = nextId;
-        nextId++;
-        return i;
     }
 
 

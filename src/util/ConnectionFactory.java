@@ -15,7 +15,7 @@ public class ConnectionFactory {
         return DriverManager.getConnection(CONN_STRING, USERNAME, PASS);
         }
         catch (SQLException e) {
-            throw new RuntimeException("Error connecting to database", e)
+            throw new RuntimeException("Error connecting to database", e);
         }
 
     }

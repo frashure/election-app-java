@@ -10,23 +10,41 @@ public class ElectionDAO {
 
     public static int getId(int year, String office, int district, String type, String party) throws SQLException {
 
-        String sql = "SELECT * FROM elections WHERE year(date) = ? AND office_id = ? AND district = ? AND `type` = ? AND party_id = ?";
+        String sql;
+
+        if (district == 0 && party != null) {
+            sql = "SELECT * FROM elections WHERE year(date) = ? AND office_id = ? AND `type` = ? AND district IS NULL AND party_id = ?";
+        }
+        else if (district != 0 && party == null) {
+            sql = "SELECT * FROM elections WHERE year(date) = ? AND office_id = ? AND `type` = ? AND district = ?  AND party_id IS NULL";
+        }
+        else if (district != 0 && party == null) {
+            sql = "SELECT * FROM elections WHERE year(date) = ? AND office_id = ? AND `type` = ? AND district IS NULL AND party_id IS NULL";
+        }
+        else {
+            sql = "SELECT * FROM elections WHERE year(date) = ? AND office_id = ? AND `type` = ? AND district = ?  AND party_id = ?";
+        }
 
         try (Connection conn = ConnectionFactory.getConnection();
-            PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, year);
             stmt.setString(2, office);
-            if (district == 0) {
-                stmt.setNull(3, Types.INTEGER);
+            stmt.setString(3, type);
+            if (district == 0 && party != null) {
+                stmt.setString(4, party);
+            }
+            else if (district != 0 && party == null) {
+                stmt.setInt(4, district);
             }
             else {
-                stmt.setInt(3, district);
+                stmt.setInt(4, district);
+                stmt.setString(5, party);
             }
-            stmt.setString(4, type);
-            stmt.setString(5, party);
+
             ResultSet rs = stmt.executeQuery();
 
+            rs.next();
             int id = rs.getInt("election_id");
             rs.close();
 
@@ -138,22 +156,38 @@ public class ElectionDAO {
 //    }
 
     public static boolean doesExist(String type, String office, String party, int district, int year) throws SQLException {
+        String sql;
 
-        String sql = "SELECT * FROM elections WHERE `type` = ? AND office_id = ? AND party_id = ? AND district = ? AND year(date) = ?";
+        if (district == 0 && party != null) {
+            sql = "SELECT * FROM elections WHERE year(date) = ? AND office_id = ? AND `type` = ? AND district IS NULL AND party_id = ?";
+        }
+        else if (district != 0 && party == null) {
+            sql = "SELECT * FROM elections WHERE year(date) = ? AND office_id = ? AND `type` = ? AND district = ?  AND party_id IS NULL";
+        }
+        else if (district != 0 && party == null) {
+            sql = "SELECT * FROM elections WHERE year(date) = ? AND office_id = ? AND `type` = ? AND district IS NULL AND party_id IS NULL";
+        }
+        else {
+            sql = "SELECT * FROM elections WHERE year(date) = ? AND office_id = ? AND `type` = ? AND district = ?  AND party_id = ?";
+        }
 
         try (Connection conn = ConnectionFactory.getConnection();
-            PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setString(1, type);
+            stmt.setInt(1, year);
             stmt.setString(2, office);
-            stmt.setString(3, party);
-            if (district == 0) {
-                stmt.setNull(4, Types.INTEGER);
+            stmt.setString(3, type);
+            if (district == 0 && party != null) {
+                stmt.setString(4, party);
+            }
+            else if (district != 0 && party == null) {
+                stmt.setInt(4, district);
             }
             else {
                 stmt.setInt(4, district);
+                stmt.setString(5, party);
             }
-            stmt.setInt(5, year);
+
             ResultSet rs = stmt.executeQuery();
 
             if (!rs.last()) {

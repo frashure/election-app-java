@@ -11,7 +11,7 @@ public final class Menu {
 
     public static int printMenu() {
         int option;
-        System.out.println("\nVIRGINIA ELECTIONS API MANAGEMENT CONSOLE\n\n");
+        System.out.println("\nVIRGINIA ELECTIONS API MANAGEMENT CONSOLE\n");
         System.out.println("****Menu****");
         System.out.println("1.  Search for a candidate");
         System.out.println("2.  Create a new candidate");
@@ -65,10 +65,10 @@ public final class Menu {
         boolean check = ElectionDAO.doesExist(type, office, party, district, year);
         if (check) {
             int eid = ElectionDAO.getId(year, office, district, type, party);
-            System.out.println("Election ID: " + eid);
+            System.out.println("\nElection ID: " + eid);
         }
         else {
-            System.out.println("Election not found");
+            System.out.println("\nElection not found");
         }
 
 

@@ -34,7 +34,7 @@ public class Main {
 
 
         Scanner in = new Scanner(System.in);
-        int option = 1;
+        int option;
 
         do {
             option = Menu.printMenu();
@@ -48,7 +48,7 @@ public class Main {
             else if (option == 3) {
                 Menu.searchElections();
             }
-            else {
+            else  if (option != 0) {
                 System.out.print("Please enter a valid number: ");
                 option = in.nextInt();
             }

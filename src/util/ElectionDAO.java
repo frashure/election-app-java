@@ -8,6 +8,36 @@ import static main.Election.dateConverter;
 @SuppressWarnings({"unused", "Duplicates"})
 public class ElectionDAO {
 
+    public static int getId(int year, String office, int district, String type, String party) throws SQLException {
+
+        String sql = "SELECT * FROM elections WHERE year(date) = ? AND office_id = ? AND district = ? AND `type` = ? AND party_id = ?";
+
+        try (Connection conn = ConnectionFactory.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, year);
+            stmt.setString(2, office);
+            if (district == 0) {
+                stmt.setNull(3, Types.INTEGER);
+            }
+            else {
+                stmt.setInt(3, district);
+            }
+            stmt.setString(4, type);
+            stmt.setString(5, party);
+            ResultSet rs = stmt.executeQuery();
+
+            int id = rs.getInt("election_id");
+            rs.close();
+
+            return id;
+
+        } catch (SQLException e) {
+            throw e;
+        }
+
+    }
+
 //    public Election getById(int id) {
 //
 //        String sql = "SELECT * FROM elections WHERE election_id = ?";
@@ -47,15 +77,22 @@ public class ElectionDAO {
 //        }
 //    }
 
-    public boolean insert(String fName, String lName, String partyId, String website) {
-        String sql = "INSERT INTO candidates (first_name, last_name, website, party_id) VALUES (?, ?, ?, ?)";
+    public boolean insert(String date, String office, int district, String type, String party, int primaryFor) {
+        String sql = "INSERT INTO candidates (date, office, district, type, party, primaryFor) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection conn = ConnectionFactory.getConnection();
             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setString(1, fName);
-            stmt.setString(2, lName);
-            stmt.setString(3, website);
-            stmt.setString(4, partyId);
+            stmt.setString(1, date);
+            stmt.setString(2, office);
+            if (district == 0) {
+                stmt.setNull(3, Types.INTEGER);
+            }
+            else {
+                stmt.setInt(3, district);
+            }
+            stmt.setString(4, type);
+            stmt.setString(5, party);
+            stmt.setInt(6, primaryFor);
 
             stmt.execute();
 
@@ -110,7 +147,12 @@ public class ElectionDAO {
             stmt.setString(1, type);
             stmt.setString(2, office);
             stmt.setString(3, party);
-            stmt.setInt(4, district);
+            if (district == 0) {
+                stmt.setNull(4, Types.INTEGER);
+            }
+            else {
+                stmt.setInt(4, district);
+            }
             stmt.setInt(5, year);
             ResultSet rs = stmt.executeQuery();
 
@@ -126,30 +168,4 @@ public class ElectionDAO {
             throw e;
         }
     }
-
-    public static int getId(String type, String office, String party, int district, int year) throws SQLException {
-
-        String sql = "SELECT * FROM elections WHERE `type` = ? AND office_id = ? AND party_id = ? AND district = ? AND year(date) = ?";
-
-        try (Connection conn = ConnectionFactory.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setString(1, type);
-            stmt.setString(2, office);
-            stmt.setString(3, party);
-            stmt.setInt(4, district);
-            stmt.setInt(5, year);
-            ResultSet rs = stmt.executeQuery();
-
-            int id = rs.getInt("election_id");
-
-            rs.close();
-            return id;
-
-        } catch (SQLException e) {
-            throw e;
-        }
-
-    }
-
 }

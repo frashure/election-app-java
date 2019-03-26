@@ -6,7 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "Duplicates"})
 public final class CandidateDAO {
 
 //    public static Candidate getById(int id) {

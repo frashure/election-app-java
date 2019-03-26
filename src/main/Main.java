@@ -37,32 +37,20 @@ public class Main {
         int option = 1;
 
         do {
-            System.out.println("\nVIRGINIA ELECTIONS API MANAGEMENT CONSOLE\n\n");
-            System.out.println("****Menu****");
-            System.out.println("1.  Check for a candidate");
-            System.out.println("2.  Create a new candidate");
-            System.out.print("\nSelect an option (or 0 to exit): ");
-            option = in.nextInt();
+            option = Menu.printMenu();
 
             if (option == 1) {
-                System.out.print("Enter candidate first name: ");
-                String fName = in.next();
-                System.out.print("Enter candidate last name: ");
-                String lName = in.next();
-
-                boolean exists = CandidateDAO.doesExist(fName, lName);
-
-                if (exists) {
-                    int id = CandidateDAO.getId(fName, lName);
-                    System.out.println("Candidate id: " + id);
-                }
-                else if (!exists) {
-                    System.out.println("Candidate does not exist in database");
-                }
-
+                Menu.searchCandidates();
             }
             else if (option == 2) {
-                System.out.println("Coming soon");
+                System.out.print("Coming soon");
+            }
+            else if (option == 3) {
+                Menu.searchElections();
+            }
+            else {
+                System.out.print("Please enter a valid number: ");
+                option = in.nextInt();
             }
 
         }

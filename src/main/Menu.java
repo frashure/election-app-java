@@ -1,5 +1,6 @@
 package main;
 import util.CandidateDAO;
+import util.DateFormatter;
 import util.ElectionCandidates;
 import util.ElectionDAO;
 
@@ -52,6 +53,9 @@ public final class Menu {
         String party = in.next();
         System.out.print("Candidate website: ");
         String website = in.next();
+        if (website.charAt(0) == 'n') {
+            website = null;
+        }
 
         System.out.println("NEW CANDIDATE:");
         System.out.println("Name: " + fName + " " + lName);
@@ -61,11 +65,12 @@ public final class Menu {
         String confirm = in.next();
 
         if (confirm.charAt(0) == 'y') {
-            CandidateDAO.insert(fName, lName, party, website);
-            int id = CandidateDAO.getLastInsertId();
+            int id = CandidateDAO.insert(fName, lName, party, website);
+            System.out.println("Candidate created!\n");
             return id;
         }
         else {
+            System.out.println("Candidate not created.\n");
             return 0;
         }
     }
@@ -104,23 +109,48 @@ public final class Menu {
     }
 
     public static int createElection() throws SQLException {
-        System.out.println("Enter date formatted as yyyy-mm-dd :");
+        System.out.print("Enter date formatted as yyyy-mm-dd :");
         String date = in.next();
-        System.out.println("Office ID: ");
+        System.out.print("Office ID: ");
         String office = in.next();
-        System.out.println("District (enter 0 for null): ");
+        System.out.print("District (enter 0 for null): ");
         int district = in.nextInt();
-        System.out.println("Type (general, primary, special): ");
+        System.out.print("Type (general, primary, special): ");
         String type = in.next();
         String party = null;
+        int generalId = 0;
         if (type.equals("primary")) {
-            System.out.println("Party: ");
+            System.out.print("Party: ");
             party = in.next();
+            int year = DateFormatter.parseYear(date);
+            generalId = ElectionDAO.getId(year, office, district, "general", null);
+            if (generalId == 0) {
+                System.out.println("General election not found. Create general? (y/n): ");
+                if (in.next().charAt(0) == 'y') {
+                    generalId = createElection();
+                    if (generalId == 0) {
+                        System.out.println("Failed to create general election");
+                        return 0;
+                    }
+                    else {
+                        System.out.println("General election created!");
+                    }
+                }
+            }
+        }
+        System.out.println("General election ID: " + generalId);
+        int id = ElectionDAO.insert(date, office, district, type, party);
+        if (type.equalsIgnoreCase("primary")) {
+            ElectionDAO.setPrimaryFor(id, generalId);
         }
 
-        ElectionDAO.insert(date, office, district, type, party);
-        int eid = ElectionDAO.getLastInsertId();
-        return eid;
+        if (id != 0) {
+            System.out.println("Election created!");
+            return id;
+        }
+        else {
+            return 0;
+        }
 
     }
 
@@ -143,9 +173,17 @@ public final class Menu {
             System.out.print("Election not found. Create election? (y/n): ");
 
             if (in.next().charAt(0) == 'y') {
-                electionId = Menu.createElection();
-                ElectionCandidates.insert(candidateId, electionId);
-                return true;
+                electionId = createElection();
+                boolean inserted = ElectionCandidates.insert(candidateId, electionId);
+
+                if (inserted) {
+                    System.out.println("Candidate added to election!");
+                    return true;
+                }
+                else {
+                    System.out.println("Candidate insert failed.");
+                    return false;
+                }
             }
             else {
                 return false;

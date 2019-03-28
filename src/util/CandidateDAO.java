@@ -5,11 +5,10 @@ import java.sql.*;
 @SuppressWarnings({"unused", "Duplicates"})
 public final class CandidateDAO {
 
-    public static int getLastInsertId() throws SQLException {
+    public static int getLastInsertId(Connection conn) throws SQLException {
         String sql = "SELECT LAST_INSERT_ID()";
 
-        try (Connection conn = ConnectionFactory.getConnection();
-             Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
+        try (Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
 
             ResultSet rs = stmt.executeQuery(sql);
             rs.next();
@@ -23,7 +22,7 @@ public final class CandidateDAO {
         }
     }
 
-    public static boolean insert(String fName, String lName, String party, String website) {
+    public static int insert(String fName, String lName, String party, String website) {
         String sql = "INSERT INTO candidates (first_name, last_name, party_id, website) VALUES (?, ?, ?, ?)";
 
         try (Connection conn = ConnectionFactory.getConnection();
@@ -35,11 +34,13 @@ public final class CandidateDAO {
             stmt.setString(4, website);
             stmt.execute();
 
-            return true;
+            int id = getLastInsertId(conn);
+
+            return id;
         }
         catch (SQLException e) {
             e.printStackTrace();
-            return false;
+            return 0;
         }
     }
 

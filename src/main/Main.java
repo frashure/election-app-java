@@ -28,7 +28,6 @@ public class Main {
                         continue;
                     }
                 }
-                // this seems to be always true; check that select last_insert_id() is working properly
                 if (candidateId == 0) {
                     System.out.println("Candidate not created");
                     continue;

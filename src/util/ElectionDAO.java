@@ -8,11 +8,10 @@ import static main.Election.dateConverter;
 @SuppressWarnings({"unused", "Duplicates"})
 public class ElectionDAO {
 
-    public static int getLastInsertId() throws SQLException {
+    public static int getLastInsertId(Connection conn) throws SQLException {
         String sql = "SELECT LAST_INSERT_ID()";
 
-        try (Connection conn = ConnectionFactory.getConnection();
-             Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
+        try (Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
 
             ResultSet rs = stmt.executeQuery(sql);
             rs.next();
@@ -55,7 +54,7 @@ public class ElectionDAO {
             else if (district != 0 && party == null) {
                 stmt.setInt(4, district);
             }
-            else {
+            else if (district != 0 && party != null){
                 stmt.setInt(4, district);
                 stmt.setString(5, party);
             }
@@ -74,7 +73,7 @@ public class ElectionDAO {
 
     }
 
-    public static boolean insert(String date, String office, int district, String type, String party) throws SQLException {
+    public static int insert(String date, String office, int district, String type, String party) throws SQLException {
         String sql;
 
         if (district == 0 && party != null) {
@@ -108,10 +107,13 @@ public class ElectionDAO {
             }
 
             stmt.execute();
-            return true;
+            int id = getLastInsertId(conn);
+
+            return id;
 
         } catch (SQLException e) {
-            throw e;
+            e.printStackTrace();
+            return 0;
         }
     }
 
@@ -170,4 +172,23 @@ public class ElectionDAO {
             throw e;
         }
     }
+
+    public static boolean setPrimaryFor(int primaryId, int generalId) {
+        String sql = "UPDATE elections SET primary_for = ? WHERE election_id = ?";
+
+        try (Connection conn = ConnectionFactory.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, primaryId);
+            stmt.setInt(2, generalId);
+            stmt.execute();
+            return true;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+    }
+
 }

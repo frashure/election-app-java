@@ -1,45 +1,38 @@
 package util;
-import main.Candidate;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 @SuppressWarnings({"unused", "Duplicates"})
 public final class CandidateDAO {
 
-//    public static Candidate getById(int id) {
-//        String sql = "SELECT * FROM candidates WHERE candidate_id = ?";
-//
-//        try (Connection conn = ConnectionFactory.getConnection();
-//             PreparedStatement stmt = conn.prepareStatement(sql)) {
-//
-//            stmt.setInt(1, id);
-//            ResultSet rs = stmt.executeQuery();
-//
-//
-//
-//         rs.close();
-//         return null;
-//        }
-//        catch (SQLException e) {
-//            e.printStackTrace();
-//
-//        }
-//    }
+    public static int getLastInsertId() throws SQLException {
+        String sql = "SELECT LAST_INSERT_ID()";
 
-    public static boolean insert(String fName, String mName, String lName, String party, String website) {
-        String sql = "INSERT INTO candidates (first_name, middle_name, last_name, party_id, website VALUES (?, ?, ? ?, ?)";
+        try (Connection conn = ConnectionFactory.getConnection();
+             Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
+
+            ResultSet rs = stmt.executeQuery(sql);
+            rs.next();
+            int id = rs.getInt("LAST_INSERT_ID()");
+
+            rs.close();
+            return id;
+
+        } catch (SQLException e) {
+            throw new SQLException("Error querying database", e);
+        }
+    }
+
+    public static boolean insert(String fName, String lName, String party, String website) {
+        String sql = "INSERT INTO candidates (first_name, last_name, party_id, website) VALUES (?, ?, ?, ?)";
 
         try (Connection conn = ConnectionFactory.getConnection();
             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, fName);
-            stmt.setString(2, mName);
-            stmt.setString(3, lName);
-            stmt.setString(4, party);
-            stmt.setString(5, website);
+            stmt.setString(2, lName);
+            stmt.setString(3, party);
+            stmt.setString(4, website);
             stmt.execute();
 
             return true;

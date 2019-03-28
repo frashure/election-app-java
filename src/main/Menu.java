@@ -1,5 +1,6 @@
 package main;
 import util.CandidateDAO;
+import util.ElectionCandidates;
 import util.ElectionDAO;
 
 import java.sql.SQLException;
@@ -23,7 +24,7 @@ public final class Menu {
         return option;
     }
 
-    public static void searchCandidates() throws SQLException {
+    public static int searchCandidates() throws SQLException {
         System.out.print("Enter candidate first name: ");
         String fName = in.next();
         System.out.print("Enter candidate last name: ");
@@ -34,13 +35,42 @@ public final class Menu {
         if (exists) {
             int id = CandidateDAO.getId(fName, lName);
             System.out.println("\nCandidate id: " + id);
+            return id;
         }
         else if (!exists) {
-            System.out.println("\nCandidate does not exist in database");
+            return 0;
+        }
+        return 0;
+    }
+
+    public static int createCandidate() throws SQLException {
+        System.out.print("Candidate first name: ");
+        String fName = in.next();
+        System.out.print("Candidate last name: ");
+        String lName = in.next();
+        System.out.print("Candidate party: ");
+        String party = in.next();
+        System.out.print("Candidate website: ");
+        String website = in.next();
+
+        System.out.println("NEW CANDIDATE:");
+        System.out.println("Name: " + fName + " " + lName);
+        System.out.println("Party: " + party);
+        System.out.println("Website: " + website);
+        System.out.println("\nIs this information correct? (y/n): ");
+        String confirm = in.next();
+
+        if (confirm.charAt(0) == 'y') {
+            CandidateDAO.insert(fName, lName, party, website);
+            int id = CandidateDAO.getLastInsertId();
+            return id;
+        }
+        else {
+            return 0;
         }
     }
 
-    public static void searchElections() throws SQLException {
+    public static int searchElections() throws SQLException {
         int year;
         String office;
         int district = 0;
@@ -65,14 +95,63 @@ public final class Menu {
         boolean check = ElectionDAO.doesExist(type, office, party, district, year);
         if (check) {
             int eid = ElectionDAO.getId(year, office, district, type, party);
-            System.out.println("\nElection ID: " + eid);
+            return eid;
         }
         else {
             System.out.println("\nElection not found");
+            return 0;
+        }
+    }
+
+    public static int createElection() throws SQLException {
+        System.out.println("Enter date formatted as yyyy-mm-dd :");
+        String date = in.next();
+        System.out.println("Office ID: ");
+        String office = in.next();
+        System.out.println("District (enter 0 for null): ");
+        int district = in.nextInt();
+        System.out.println("Type (general, primary, special): ");
+        String type = in.next();
+        String party = null;
+        if (type.equals("primary")) {
+            System.out.println("Party: ");
+            party = in.next();
         }
 
+        ElectionDAO.insert(date, office, district, type, party);
+        int eid = ElectionDAO.getLastInsertId();
+        return eid;
 
+    }
 
+    public static boolean insertCandidateIntoElection(int candidateId) throws SQLException {
+        int electionId = searchElections();
+
+        if (electionId != 0) {
+            System.out.println("Election ID: " + electionId);
+            boolean ec_inserted = ElectionCandidates.insert(candidateId, electionId);
+            if (ec_inserted) {
+                System.out.println("Candidate inserted!");
+                return true;
+            }
+            else {
+                System.out.println("Candidate insert failed.");
+                return false;
+            }
+        }
+        else if (electionId == 0) {
+            System.out.print("Election not found. Create election? (y/n): ");
+
+            if (in.next().charAt(0) == 'y') {
+                electionId = Menu.createElection();
+                ElectionCandidates.insert(candidateId, electionId);
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        return false;
     }
 
 }

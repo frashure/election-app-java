@@ -179,8 +179,8 @@ public class ElectionDAO {
         try (Connection conn = ConnectionFactory.getConnection();
             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setInt(1, primaryId);
-            stmt.setInt(2, generalId);
+            stmt.setInt(1, generalId);
+            stmt.setInt(2, primaryId);
             stmt.execute();
             return true;
 

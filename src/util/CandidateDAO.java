@@ -26,15 +26,18 @@ public final class CandidateDAO {
         String sql = "INSERT INTO candidates (first_name, last_name, party_id, website) VALUES (?, ?, ?, ?)";
 
         try (Connection conn = ConnectionFactory.getConnection();
-            PreparedStatement stmt = conn.prepareStatement(sql)) {
+            PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setString(1, fName);
             stmt.setString(2, lName);
             stmt.setString(3, party);
             stmt.setString(4, website);
-            stmt.execute();
+            stmt.executeUpdate();
 
-            int id = getLastInsertId(conn);
+            ResultSet keys = stmt.getGeneratedKeys();
+            keys.next();
+            int id = keys.getInt(1);
+            keys.close();
 
             return id;
         }

@@ -90,7 +90,7 @@ public class ElectionDAO {
         }
 
         try (Connection conn = ConnectionFactory.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setString(1, date);
             stmt.setString(2, office);
@@ -106,8 +106,10 @@ public class ElectionDAO {
                 stmt.setString(5, party);
             }
 
-            stmt.execute();
-            int id = getLastInsertId(conn);
+            stmt.executeUpdate();
+            ResultSet keys = stmt.getGeneratedKeys();
+            keys.next();
+            int id = keys.getInt(1);
 
             return id;
 

@@ -109,7 +109,7 @@ public final class Menu {
     }
 
     public static int createElection() throws SQLException {
-        System.out.print("Enter date formatted as yyyy-mm-dd :");
+        System.out.print("Enter date formatted as yyyy-mm-dd: ");
         String date = in.next();
         System.out.print("Office ID: ");
         String office = in.next();

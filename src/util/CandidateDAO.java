@@ -5,6 +5,7 @@ import java.sql.*;
 @SuppressWarnings({"unused", "Duplicates"})
 public final class CandidateDAO {
 
+    // method is superfluous; this is accomplished by setting Statement object to return generated keys
     public static int getLastInsertId(Connection conn) throws SQLException {
         String sql = "SELECT LAST_INSERT_ID()";
 

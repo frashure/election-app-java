@@ -39,7 +39,14 @@ public final class Menu {
             return id;
         }
         else if (!exists) {
-            return 0;
+            System.out.print("Candidate not found. Search again? (y/n): ");
+            if (in.next().charAt(0) == 'y') {
+                searchCandidates();
+            }
+            else {
+                return 0;
+            }
+
         }
         return 0;
     }

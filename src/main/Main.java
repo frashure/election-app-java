@@ -1,6 +1,7 @@
 package main;
 
 import util.ElectionCandidates;
+import util.ElectionDAO;
 
 import java.sql.SQLException;
 import java.util.Scanner;
@@ -16,10 +17,11 @@ public class Main {
         do {
             option = Menu.printMenu();
 
+            // search candidates
             if (option == 1) {
                 int candidateId = Menu.searchCandidates();
                 if (candidateId == 0) {
-                    System.out.print("Candidate not found. Create candidate? (y/n): ");
+                    System.out.print("Create candidate? (y/n): ");
                     char res = in.next().charAt(0);
                     if (res == 'y') {
                         candidateId = Menu.createCandidate();
@@ -40,6 +42,7 @@ public class Main {
                     }
                 }
             }
+            // create candidate
             else if (option == 2) {
                 int candidateId = Menu.createCandidate();
                 System.out.print("Would you like to add this candidate to an election? (y/n): ");
@@ -49,9 +52,12 @@ public class Main {
                 }
 
             }
+            // search elections
             else if (option == 3) {
-                Menu.searchElections();
+                int eid = Menu.searchElections();
+                ElectionDAO.getCandidatesByElection(eid);
             }
+            //
             else if (option == 4) {
 
             }

@@ -6,7 +6,7 @@ import java.util.GregorianCalendar;
 import static main.Election.dateConverter;
 
 @SuppressWarnings({"unused", "Duplicates"})
-public class ElectionDAO {
+public final class ElectionDAO {
 
     public static int getLastInsertId(Connection conn) throws SQLException {
         String sql = "SELECT LAST_INSERT_ID()";
@@ -189,6 +189,38 @@ public class ElectionDAO {
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
+        }
+
+    }
+
+    public static void getCandidatesByElection(int eid) throws SQLException {
+        String sql = "SELECT * FROM election_candidates ec LEFT JOIN candidates c ON ec.candidate_id = c.candidate_id WHERE ec.election_id = ?";
+
+        try (Connection conn = ConnectionFactory.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, eid);
+
+            ResultSet rs = stmt.executeQuery();
+
+            if (!rs.next()) {
+                System.out.println("No candidates associated with this election.");
+            }
+            else {
+                rs.beforeFirst();
+                while (rs.next()) {
+                    String fName = rs.getString("first_name");
+                    String lName = rs.getString("last_name");
+                    String party = rs.getString("party_id");
+                    System.out.println("\n" + fName + " " + lName + " (" + party + ")");
+
+                }
+            }
+
+
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e;
         }
 
     }

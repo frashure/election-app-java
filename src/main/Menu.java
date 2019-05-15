@@ -21,15 +21,16 @@ public final class Menu {
         System.out.println("4.  Create a new election");
         System.out.print("\nSelect an option (or 0 to exit): ");
         option = in.nextInt();
+        String swallowReturn = in.nextLine();
 
         return option;
     }
 
     public static int searchCandidates() throws SQLException {
         System.out.print("Enter candidate first name: ");
-        String fName = in.next();
+        String fName = in.nextLine();
         System.out.print("Enter candidate last name: ");
-        String lName = in.next();
+        String lName = in.nextLine();
 
         boolean exists = CandidateDAO.doesExist(fName, lName);
 

@@ -12,15 +12,17 @@ public abstract class Election {
     private final int id;
     private final String type;
     private final GregorianCalendar date;
-    private Office office;
+    private String office;
     private ArrayList<Candidate> candidates = new ArrayList<>();
+    private int district;
 
 
-    public Election(int id, GregorianCalendar date, Office office, String type) {
+    public Election(int id, GregorianCalendar date, String office, String type, int district) {
         this.id = id;
         this.date = date;
         this.office = office;
         this.type = type;
+        this.district = district;
     }
 
 
@@ -28,8 +30,12 @@ public abstract class Election {
         return this.date;
     }
 
-    public Office getOffice() {
+    public String getOffice() {
         return this.office;
+    }
+
+    public int getDistrict() {
+        return this.district;
     }
 
     public int getId() {
@@ -49,20 +55,28 @@ public abstract class Election {
     }
 
     public static GregorianCalendar dateConverter(String date) throws ParseException {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        String dateString = date;
-        Date newDate = sdf.parse(dateString);
-        Calendar c = Calendar.getInstance();
-        c.setTime(newDate);
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            String dateString = date;
+            Date newDate = sdf.parse(dateString);
+            Calendar c = Calendar.getInstance();
+            c.setTime(newDate);
 
-        int y = c.get(Calendar.YEAR);
-        int m = c.get(Calendar.MONTH);
-        int d =  c.get(Calendar.DAY_OF_WEEK);
+            int y = c.get(Calendar.YEAR);
+            int m = c.get(Calendar.MONTH);
+            int d = c.get(Calendar.DAY_OF_WEEK);
 
-        GregorianCalendar gc = new GregorianCalendar(y, m, d);
-        return gc;
+            GregorianCalendar gc = new GregorianCalendar(y, m, d);
+            return gc;
+        } catch (ParseException e) {
+            throw e;
+        }
+
+
     }
 
-
+//    public static Election create() {
+//        if
+//    }
 
 }

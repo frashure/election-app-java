@@ -4,12 +4,13 @@ import util.ElectionCandidates;
 import util.ElectionDAO;
 
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.Scanner;
 
 public class Main {
 
 
-    public static void main(String[] args) throws SQLException{
+    public static void main(String[] args) throws SQLException, ParseException {
 
         Scanner in = new Scanner(System.in);
         int option;
@@ -19,8 +20,9 @@ public class Main {
 
             // search candidates
             if (option == 1) {
-                int candidateId = Menu.searchCandidates();
-                if (candidateId == 0) {
+                boolean found = Menu.searchCandidates();
+                int candidateId = 0;
+                if (!found) {
                     System.out.print("Create candidate? (y/n): ");
                     char res = in.next().charAt(0);
                     if (res == 'y') {

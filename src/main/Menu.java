@@ -5,6 +5,7 @@ import util.ElectionCandidates;
 import util.ElectionDAO;
 
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.Scanner;
 
 public final class Menu {
@@ -25,7 +26,7 @@ public final class Menu {
         return option;
     }
 
-    public static int searchCandidates() throws SQLException {
+    public static boolean searchCandidates() throws SQLException, ParseException {
         System.out.print("Enter candidate first name: ");
         String fName = in.next();
         System.out.print("Enter candidate last name: ");
@@ -35,20 +36,20 @@ public final class Menu {
 
         if (exists) {
             int id = CandidateDAO.getId(fName, lName);
-            System.out.println("\nCandidate id: " + id);
-            return id;
+//            System.out.println("\nCandidate id: " + id);
+            Candidate c = CandidateDAO.getInfo(id);
+            c.printInfo();
+            return true;
+
         }
         else if (!exists) {
             System.out.print("Candidate not found. Search again? (y/n): ");
             if (in.next().charAt(0) == 'y') {
                 searchCandidates();
             }
-            else {
-                return 0;
-            }
-
+            return false;
         }
-        return 0;
+        return false;
     }
 
     public static int createCandidate() throws SQLException {

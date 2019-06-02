@@ -1,6 +1,12 @@
 package util;
 
+import main.Candidate;
+import main.Election;
+import main.GeneralElection;
+import main.PrimaryElection;
+
 import java.sql.*;
+import java.text.ParseException;
 
 @SuppressWarnings({"unused", "Duplicates"})
 public final class CandidateDAO {
@@ -27,7 +33,7 @@ public final class CandidateDAO {
         String sql = "INSERT INTO candidates (first_name, last_name, party_id, website) VALUES (?, ?, ?, ?)";
 
         try (Connection conn = ConnectionFactory.getConnection();
-            PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setString(1, fName);
             stmt.setString(2, lName);
@@ -41,8 +47,7 @@ public final class CandidateDAO {
             keys.close();
 
             return id;
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
             return 0;
         }
@@ -60,7 +65,7 @@ public final class CandidateDAO {
         String sql = "SELECT * FROM candidates WHERE first_name = ? AND last_name = ?";
 
         try (Connection conn = ConnectionFactory.getConnection();
-            PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, fName);
             stmt.setString(2, lName);
@@ -70,8 +75,7 @@ public final class CandidateDAO {
             if (!rs.last()) {
                 rs.close();
                 return false;
-            }
-            else {
+            } else {
                 rs.close();
                 return true;
             }
@@ -88,7 +92,7 @@ public final class CandidateDAO {
         String sql = "SELECT * FROM candidates WHERE first_name = ? AND last_name = ?";
 
         try (Connection conn = ConnectionFactory.getConnection();
-            PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, fName);
             stmt.setString(2, lName);
@@ -106,6 +110,65 @@ public final class CandidateDAO {
         }
     }
 
+    public static Candidate getInfo(int id) throws SQLException, ParseException {
+
+        String sql = "SELECT c.*, e.* FROM candidates c LEFT JOIN election_candidates ec ON c.candidate_id = ec.candidate_id LEFT JOIN elections e ON ec.election_id = e.election_id WHERE c.candidate_id = ?";
+
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, id);
+
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                // Create candidate
+                int cid = rs.getInt("candidate_id");
+                String fName = rs.getString("first_name");
+                String lName = rs.getString("last_name");
+                String party = rs.getString("party_id");
+
+                Candidate c = new Candidate(cid, fName, lName, party, null);
+
+                // If candidate is running in an election, election_id will not be 0; create election, move to next
+                    while (rs.getInt("election_id") != 0) {
+                        int eid = rs.getInt("election_id");
+                        String dateString = rs.getString("date");
+                        String type = rs.getString("type");
+                        String office = rs.getString("office_id");
+                        int district = rs.getInt("district");
+
+                        if (type.equalsIgnoreCase("primary")) {
+                            String eParty = rs.getString("party_id");
+                            int primaryFor = rs.getInt("primary_for");
+                            Election e = new PrimaryElection(eid, Election.dateConverter(dateString), office, party, district, type);
+                            ((PrimaryElection) e).setPrimaryFor(primaryFor);
+                            c.addElection(e);
+                        }
+                        else {
+                            Election e = new GeneralElection(eid, Election.dateConverter(dateString), office, type, district);
+                            c.addElection(e);
+                        }
+                        if (!rs.next()) {
+                            break;
+                    }
+                }
 
 
+                rs.close();
+                return c;
+            }
+
+            else {
+                rs.close();
+                return null;
+            }
+
+        } // end try
+
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

@@ -216,7 +216,7 @@ public final class ElectionDAO {
                 }
             }
 
-
+            rs.close();
 
         } catch (SQLException e) {
             e.printStackTrace();

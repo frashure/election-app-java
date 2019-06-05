@@ -2,7 +2,6 @@ package main;
 
 import util.ElectionCandidates;
 import util.ElectionDAO;
-
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Scanner;

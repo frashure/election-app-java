@@ -37,7 +37,6 @@ public final class Menu {
 
         if (exists) {
             int id = CandidateDAO.getId(fName, lName);
-//            System.out.println("\nCandidate id: " + id);
             Candidate c = CandidateDAO.getInfo(id);
             c.printInfo();
             return true;

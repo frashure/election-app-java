@@ -75,8 +75,4 @@ public abstract class Election {
 
     }
 
-//    public static Election create() {
-//        if
-//    }
-
 }
